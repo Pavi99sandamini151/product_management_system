@@ -20,11 +20,12 @@ app.get("/hello-world", (req, res) => {
 app.post("/api/create", (req, res) => {
   ( async () => {
     try {
-      await db.collection("products").doc("/"+ req.body.id+ "/")
+      await db.collection("books").doc("/"+ req.body.id+ "/")
           .create({
             name: req.body.name,
-            description: req.body.description,
-            price: req.body.price,
+            isbn: req.body.isbn,
+            author: req.body.author,
+            link: req.body.link,
           });
       return res.status(200).send();
     } catch (error) {
@@ -37,7 +38,7 @@ app.post("/api/create", (req, res) => {
 app.get("/api/read", (req, res) => {
   ( async () => {
     try {
-      const query = db.collection("products");
+      const query = db.collection("books");
       const response = [];
       await query.get().then((QuerySnapshot) => {
         const docs = QuerySnapshot.docs;
@@ -45,8 +46,9 @@ app.get("/api/read", (req, res) => {
           const selectedItem = {
             id: doc.id,
             name: doc.data().name,
-            description: doc.data().description,
-            price: doc.data().price,
+            isbn: doc.data().isbn,
+            author: doc.data().author,
+            link: doc.data().link,
           };
           response.push(selectedItem);
         }
@@ -63,9 +65,9 @@ app.get("/api/read", (req, res) => {
 app.get("/api/read/:id", (req, res) => {
   ( async () => {
     try {
-      const document = db.collection("products").doc(req.params.id);
-      const product = await document.get();
-      const response = product.data();
+      const document = db.collection("books").doc(req.params.id);
+      const book = await document.get();
+      const response = book.data();
       return res.status(200).send(response);
     } catch (error) {
       console.log(error);
@@ -77,11 +79,12 @@ app.get("/api/read/:id", (req, res) => {
 app.put("/api/update/:id", (req, res) => {
   ( async () => {
     try {
-      const document = db.collection("products").doc(req.params.id);
+      const document = db.collection("books").doc(req.params.id);
       await document.update({
         name: req.body.name,
-        description: req.body.description,
-        price: req.body.price,
+        isbn: req.body.isbn,
+        author: req.body.author,
+        link: req.body.link,
       });
       return res.status(200).send();
     } catch (error) {
@@ -94,7 +97,7 @@ app.put("/api/update/:id", (req, res) => {
 app.delete("/api/delete/:id", (req, res) => {
   ( async () => {
     try {
-      const document = db.collection("products").doc(req.params.id);
+      const document = db.collection("books").doc(req.params.id);
       await document.delete();
       return res.status(200).send();
     } catch (error) {
